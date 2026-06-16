@@ -1,0 +1,32 @@
+# Rust
+/target
+**/*.rs.bk
+
+# Node
+node_modules/
+dist/
+
+# Tauri
+src-tauri/target/
+src-tauri/release/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+*.token
+
+# Builds
+*.deb
+*.rpm
+*.dmg
+*.app
+*.exe
