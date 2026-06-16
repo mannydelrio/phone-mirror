@@ -14,15 +14,15 @@ function Write-Step($msg) {
 }
 
 function Write-Ok($msg) {
-    Write-Host "  ✓ $msg" -ForegroundColor Green
+    Write-Host "  [OK] $msg" -ForegroundColor Green
 }
 
 function Write-Skip($msg) {
-    Write-Host "  ⊘ $msg" -ForegroundColor Yellow
+    Write-Host "  [SKIP] $msg" -ForegroundColor Yellow
 }
 
 function Write-Err($msg) {
-    Write-Host "  ✗ $msg" -ForegroundColor Red
+    Write-Host "  [ERR] $msg" -ForegroundColor Red
 }
 
 function Test-Admin {
@@ -31,17 +31,17 @@ function Test-Admin {
     return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-# ── Step 1: Check for Administrator ──────────────────────────────
+# Step 1: Check for Administrator
 Write-Step "Checking permissions"
 if (-not (Test-Admin)) {
     Write-Err "This script requires Administrator privileges."
-    Write-Host "Right-click PowerShell → 'Run as administrator' and try again." -ForegroundColor Yellow
+    Write-Host "Right-click PowerShell, select 'Run as administrator', and try again." -ForegroundColor Yellow
     Read-Host "Press Enter to exit"
     exit 1
 }
 Write-Ok "Running as Administrator"
 
-# ── Step 2: Rust ──────────────────────────────────────────────────
+# Step 2: Rust
 Write-Step "Checking Rust"
 $cargo = Get-Command cargo -ErrorAction SilentlyContinue
 
@@ -74,7 +74,7 @@ if (-not $cl) {
     Write-Ok "MSVC Build Tools found"
 }
 
-# ── Step 3: Node.js ─────────────────────────────────────────────
+# Step 3: Node.js
 Write-Step "Checking Node.js"
 $node = Get-Command node -ErrorAction SilentlyContinue
 
@@ -95,7 +95,7 @@ if (-not $node) {
     Write-Ok "Node.js already installed ($version)"
 }
 
-# ── Step 4: Android Platform Tools ──────────────────────────────
+# Step 4: Android Platform Tools
 Write-Step "Checking Android Platform Tools (adb)"
 $adbPath = Join-Path $PSScriptRoot "platform-tools"
 $adbExe = Join-Path $adbPath "adb.exe"
@@ -118,12 +118,12 @@ if (-not (Test-Path $adbExe)) {
 # Add to PATH for this session
 $env:PATH = "$adbPath;$env:PATH"
 
-# ── Step 5: npm dependencies ────────────────────────────────────
+# Step 5: npm dependencies
 Write-Step "Installing npm dependencies"
 npm install --prefix $PSScriptRoot 2>&1 | Out-Null
 Write-Ok "npm dependencies installed"
 
-# ── Step 6: Rust build check ────────────────────────────────────
+# Step 6: Rust build check
 Write-Step "Checking Rust build"
 Push-Location (Join-Path $PSScriptRoot "src-tauri")
 $buildResult = cargo check 2>&1
@@ -132,14 +132,14 @@ Pop-Location
 if ($LASTEXITCODE -eq 0) {
     Write-Ok "Rust build passes"
 } else {
-    Write-Err "Rust build failed — see output above"
+    Write-Err "Rust build failed - see output above"
 }
 
-# ── Step 7: USB Debugging reminder ──────────────────────────────
+# Step 7: USB Debugging reminder
 Write-Step "Final Checklist"
 Write-Host "  1. Enable USB Debugging on your phone:" -ForegroundColor White
-Write-Host "     Settings → About Phone → Tap 'Build Number' 7 times" -ForegroundColor Gray
-Write-Host "     Settings → Developer Options → USB Debugging ON" -ForegroundColor Gray
+Write-Host "     Settings > About Phone > Tap 'Build Number' 7 times" -ForegroundColor Gray
+Write-Host "     Settings > Developer Options > USB Debugging ON" -ForegroundColor Gray
 Write-Host ""
 Write-Host "  2. Connect your phone via USB" -ForegroundColor White
 Write-Host ""
@@ -152,5 +152,5 @@ Write-Host "     or" -ForegroundColor Gray
 Write-Host "     npm run tauri dev  (from project root)" -ForegroundColor Cyan
 
 Write-Host ""
-Write-Host "All done! 🎉" -ForegroundColor Green
+Write-Host "All done!" -ForegroundColor Green
 Read-Host "`nPress Enter to exit"
